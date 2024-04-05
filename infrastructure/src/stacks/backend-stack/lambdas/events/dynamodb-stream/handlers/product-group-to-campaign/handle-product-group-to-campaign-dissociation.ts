@@ -1,0 +1,72 @@
+/* ---------- External ---------- */
+import { UpdateCommandInput, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDB } from 'aws-sdk';
+
+/* ---------- Types ---------- */
+import { Handler } from '_stacks/backend-stack/lambdas/events/dynamodb-stream/@types';
+
+/* ---------- Modules ---------- */
+import { get_product_group_by_sort_key } from '_modules/product-groups/functions/get/get-product-group-by-sort-key';
+
+/* ---------- Clients ---------- */
+import { dynamodb_documentclient } from '_clients/dynamodb';
+
+/* ---------- Types ---------- */
+import { ProductGroupToCampaignAssociation } from '_stacks/backend-stack/lambdas/events/dynamodb-stream/handlers/product-group-to-campaign/@types';
+
+export const handle_product_group_to_campaign_dissociation: Handler = async ({
+  item,
+}) => {
+  try {
+    const { OldImage } = item;
+
+    if (!OldImage) return;
+
+    const record = DynamoDB.Converter.unmarshall(
+      OldImage,
+    ) as ProductGroupToCampaignAssociation;
+
+    const { partition_key, sort_key } = record;
+
+    const brand_id = partition_key.replace('brand#', '');
+    const product_group_sort_key = `brand-product-group#${
+      sort_key.split('brand-product-group#')[1]
+    }`;
+
+    /* ----------
+     * Fetch the product_group from the database
+     * ---------- */
+    const product_group = await get_product_group_by_sort_key({
+      brand_id,
+      product_group_sort_key,
+    });
+
+    /* ----------
+     * If the product group still exists, it means the campaign was deleted
+     * so we update the product group to remove the campaign association
+     * ---------- */
+    if (product_group) {
+      const params: UpdateCommandInput = {
+        ConditionExpression:
+          'attribute_exists(#sort_key) AND attribute_exists(#partition_key)',
+        Key: {
+          partition_key: `brand#${brand_id}`,
+          sort_key: product_group_sort_key,
+        },
+        TableName: process.env.TABLE_NAME,
+        UpdateExpression:
+          'REMOVE assigned_campaign_name, assigned_campaign_sort_key',
+        ExpressionAttributeNames: {
+          '#partition_key': 'partition_key',
+          '#sort_key': 'sort_key',
+        },
+      };
+
+      const command = new UpdateCommand(params);
+
+      await dynamodb_documentclient.send(command);
+    }
+  } catch (err) {
+    console.log('handle_product_group_to_campaign_dissociation error: ', err);
+  }
+};

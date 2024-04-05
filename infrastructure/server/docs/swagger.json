@@ -1,0 +1,68 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Polytag API",
+    "version": "0.0.1",
+    "description": "Polytag API Documentation",
+    "contact": {
+      "email": "hugo@westpoint.io"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3333/"
+    },
+    {
+      "url": "http://apid.polyt.ag/"
+    }
+  ],
+  "paths": {
+    "/forgot-password": {
+      "get": {
+        "summary": "Sends email with code to reset password",
+        "description": "Sends email with code to reset password",
+        "tags": [
+          "Forgot password"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "Changes password with given email and code",
+        "description": "Changes password with given email and code",
+        "tags": [
+          "Forgot password"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

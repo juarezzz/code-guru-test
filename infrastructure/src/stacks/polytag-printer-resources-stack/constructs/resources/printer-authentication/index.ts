@@ -1,0 +1,97 @@
+/* ---------- External ---------- */
+import { Construct } from 'constructs';
+import {
+  Cors,
+  IRestApi,
+  LambdaIntegration,
+  Resource,
+} from 'aws-cdk-lib/aws-apigateway';
+import { Tags } from 'aws-cdk-lib';
+
+/* ---------- Constructs ---------- */
+import { CognitoConstruct } from '_stacks/backend-stack/constructs/Cognito';
+import { LayersConstruct } from '_stacks/backend-stack/constructs/Layers';
+
+/* ---------- Lambdas ---------- */
+import { PrinterAuthenticationGETLambda } from '_stacks/polytag-printer-resources-stack/lambdas/api/printer-authentication/GET';
+import { PrinterAuthenticationPOSTLambda } from '_stacks/polytag-printer-resources-stack/lambdas/api/printer-authentication/POST';
+
+/* ---------- Helpers ---------- */
+import { add_inspector_tags } from '_helpers/general/add-inspector-tags';
+
+/* ---------- Interfaces ---------- */
+interface Props {
+  cognito_construct: CognitoConstruct;
+  environment: string;
+  layers_construct: LayersConstruct;
+
+  rest_api: IRestApi;
+}
+
+export class PrinterAuthenticationResource extends Construct {
+  public readonly get: PrinterAuthenticationGETLambda;
+
+  public readonly post: PrinterAuthenticationPOSTLambda;
+
+  public readonly resource: Resource;
+
+  constructor(scope: Construct, id: string, props: Props) {
+    super(scope, id);
+
+    /* ---------- Resources ---------- */
+    this.resource = props.rest_api.root.addResource('printer-authentication', {
+      defaultCorsPreflightOptions: {
+        allowHeaders: ['*'],
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: ['GET', 'POST'],
+      },
+    });
+
+    /* ---------- Lambdas ---------- */
+    this.get = new PrinterAuthenticationGETLambda(
+      this,
+      `Printer-Authentication-GET-Lambda-${props.environment}`,
+      {
+        environment: props.environment,
+        cognito_construct: props.cognito_construct,
+        layers_construct: props.layers_construct,
+      },
+    );
+
+    this.post = new PrinterAuthenticationPOSTLambda(
+      this,
+      `Printer-Authentication-POST-Lambda-${props.environment}`,
+      {
+        environment: props.environment,
+        cognito_construct: props.cognito_construct,
+        layers_construct: props.layers_construct,
+      },
+    );
+
+    /* ---------- Methods ---------- */
+    this.resource.addMethod(
+      'GET',
+      new LambdaIntegration(this.get.function, { allowTestInvoke: false }),
+    );
+
+    this.resource.addMethod(
+      'POST',
+      new LambdaIntegration(this.post.function, { allowTestInvoke: false }),
+    );
+
+    /* ---------- Tags ---------- */
+    Tags.of(this.get.function).add(
+      'Custom:Child_Resource',
+      'printer-authentication',
+    );
+    Tags.of(this.get.function).add('Custom:Environment', props.environment);
+
+    Tags.of(this.post.function).add(
+      'Custom:Child_Resource',
+      'printer-authentication',
+    );
+    Tags.of(this.post.function).add('Custom:Environment', props.environment);
+
+    if (props.environment !== 'STG') add_inspector_tags(this);
+  }
+}

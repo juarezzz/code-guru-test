@@ -1,0 +1,9 @@
+{
+  "name": "aws-cdk-lib",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "aws-cdk-lib": "^2.73.0"
+  }
+}

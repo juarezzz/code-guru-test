@@ -1,0 +1,57 @@
+/* ---------- External ---------- */
+import { QueryCommandInput, QueryCommand } from '@aws-sdk/lib-dynamodb';
+
+/* ---------- Clients ---------- */
+import { dynamodb_documentclient } from '_clients/dynamodb';
+
+/* ---------- Models ---------- */
+import { Image } from '_modules/image-library/models';
+
+/* ---------- Utils ---------- */
+import { decode_last_key } from '_helpers/database/decode-last-key';
+import { encode_last_key } from '_helpers/database/encode-last-key';
+
+/* ---------- Interfaces ---------- */
+interface GetAllImagesInput {
+  brand_id: string;
+  last_key?: string;
+}
+
+/* ---------- Function ---------- */
+const get_all_images = async ({ brand_id, last_key }: GetAllImagesInput) => {
+  const decoded_last_key = decode_last_key({ last_key });
+
+  const exclusive_start_key = decoded_last_key && {
+    datatype: 'brand-image',
+    partition_key: `brand#${brand_id}`,
+    sort_key: decoded_last_key.sort_key,
+  };
+
+  const params: QueryCommandInput = {
+    TableName: process.env.TABLE_NAME,
+    IndexName: 'datatype-pk-index',
+    KeyConditionExpression:
+      'datatype = :datatype AND partition_key = :partition_key',
+    ExpressionAttributeValues: {
+      ':datatype': 'brand-image',
+      ':partition_key': `brand#${brand_id}`,
+    },
+    ExclusiveStartKey: exclusive_start_key,
+  };
+
+  const command = new QueryCommand(params);
+
+  const { Items, LastEvaluatedKey } = await dynamodb_documentclient.send(
+    command,
+  );
+
+  const last_evaluated_key = encode_last_key({
+    last_evaluated_key: LastEvaluatedKey,
+    preserve: ['sort_key'],
+  });
+
+  return { images: Items as Image[], last_evaluated_key };
+};
+
+/* ---------- Export ---------- */
+export { get_all_images };

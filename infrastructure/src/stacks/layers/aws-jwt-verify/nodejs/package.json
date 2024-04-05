@@ -1,0 +1,9 @@
+{
+  "name": "aws-jwt-verify",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "aws-jwt-verify": "^3.4.0"
+  }
+}
