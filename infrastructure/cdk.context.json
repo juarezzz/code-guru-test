@@ -1,0 +1,77 @@
+{
+  "availability-zones:account=531551740863:region=us-west-1": [
+    "us-west-1b",
+    "us-west-1c"
+  ],
+  "hosted-zone:account=531551740863:domainName=polytag.dev:region=us-west-1": {
+    "Id": "/hostedzone/Z02604221LS0K10H8QR8X",
+    "Name": "polytag.dev."
+  },
+  "hosted-zone:account=531551740863:domainName=polytag.westpoint.io:region=us-west-1": {
+    "Id": "/hostedzone/Z00616776GLWDL8OVJSW",
+    "Name": "polytag.westpoint.io."
+  },
+  "hosted-zone:account=531551740863:domainName=polytag.westpoint.io:region=us-east-1": {
+    "Id": "/hostedzone/Z00616776GLWDL8OVJSW",
+    "Name": "polytag.westpoint.io."
+  },
+  "availability-zones:account=531551740863:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+  ],
+  "availability-zones:account=524616358322:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+  ],
+  "hosted-zone:account=248244674100:domainName=polytag.westpoint.io:region=us-east-1": {
+    "Id": "/hostedzone/Z083006710L6C9FSLJZ3T",
+    "Name": "polytag.westpoint.io."
+  },
+  "availability-zones:account=248244674100:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+  ],
+  "hosted-zone:account=248244674100:domainName=services.polytag.co.uk:region=us-east-1": {
+    "Id": "/hostedzone/Z077463323GUUKNVKZZDQ",
+    "Name": "services.polytag.co.uk."
+  },
+  "hosted-zone:account=248244674100:domainName=polyt.ag:region=us-east-1": {
+    "Id": "/hostedzone/Z07101001ZFLAUSH8RHH4",
+    "Name": "polyt.ag."
+  },
+  "hosted-zone:account=248244674100:domainName=tgz.bz:region=us-east-1": {
+    "Id": "/hostedzone/Z08657422K87YVIJIYXV3",
+    "Name": "tgz.bz."
+  },
+  "hosted-zone:account=248244674100:domainName=polyt.ag:region=eu-west-1": {
+    "Id": "/hostedzone/Z07101001ZFLAUSH8RHH4",
+    "Name": "polyt.ag."
+  },
+  "hosted-zone:account=248244674100:domainName=tgz.bz:region=eu-west-1": {
+    "Id": "/hostedzone/Z08657422K87YVIJIYXV3",
+    "Name": "tgz.bz."
+  },
+  "availability-zones:account=248244674100:region=eu-west-1": [
+    "eu-west-1a",
+    "eu-west-1b",
+    "eu-west-1c"
+  ],
+  "availability-zones:account=524616358322:region=eu-west-1": [
+    "eu-west-1a",
+    "eu-west-1b",
+    "eu-west-1c"
+  ],
+  "acknowledged-issue-numbers": [21661, 25714]
+}
